@@ -51,6 +51,7 @@ def loadProj(path):
 
     
     
+
 console.print("----------------------------------\n** WELCOME IN THE CROWD FUNDING ** \n----------------------------------\n", style="color(5)")
 def register():
     
@@ -113,7 +114,7 @@ def login():
                 break
             else:
              console.print("Wrong Password For This User, Try Again", style='red blink reverse bold frame')
-register()
+# register()
 login()
 
 def createProject():
@@ -159,4 +160,121 @@ def createProject():
    else:
        print("Sorry, You Are Not Logged In To Create -_-")
 
+def editProject():
+    wantedProject = {}   
+    if "logged" in loginUser and loginUser["logged"] == True:
+       loginEmail = loginUser["email"]
+       yourProjectTitle = input("Enter The Title Of Your Project You Want To Modify Please: ")
+       loadProj('projects.json')
+       for proj in projectsList:
+         if( proj["ownerEmail"] == loginEmail and  proj["title"] == yourProjectTitle):
+            wantedProject = proj
+            break
+       if(wantedProject):
+         print(wantedProject)
+       else:
+           print("You Have No Project With This Title")
+           return
+
+    else:
+        print("Sorry, You Are Not Logged In To Edit -_-")
+        return
+    print(wantedProject)
+    decision = input("Do You Want To Modify The Project Title ? ")
+    if(decision.lower() == "yes" or decision.lower() == 'y'):
+            title = input("\nEnter Project Title: ")
+            while (not title.isalpha()):
+               title = input("Enter Project Title Correctly: ")
+            wantedProject["title"] = title
+    decision = input("Do You Want To Modify The Project Details ? ")
+    if(decision.lower() == "yes" or decision.lower() == 'y'):
+         details = input("Enter Project Details: ")
+         while(not isinstance(details, str)):
+             details = input("Enter Your Project Details Correctly: ")
+         wantedProject["details"] = details
+    decision = input("Do You Want To Modify The Project Total Target ? ")
+    if(decision.lower() == "yes" or decision.lower() == 'y'):
+        totalTarget = input("Enter Project Total Target: ")
+        while(not totalTarget.isdigit()):
+            totalTarget = input("Enter Your Project Total Target Correctly: ")
+            wantedProject["totalTarget"] = totalTarget
+    decision = input("Do You Want To Modify The Project Reached Target ? ")
+    if(decision.lower() == "yes" or decision.lower() == 'y'):
+        reachedTarget = input("Enter Project Reached Target: ")
+        while(not reachedTarget.isdigit()):
+           reachedTarget = input("Enter Your Project Reached Target Correctly: ")
+        wantedProject["reachedTarget"] = reachedTarget
+    decision = input("Do You Want To Modify The Project Start Date ? ")
+    if(decision.lower() == "yes" or decision.lower() == 'y'):
+        while True:
+          try:
+            startDate = input("Enter Project Start Date: (DD-MM-YYYY) ")
+            datetime.datetime.strptime(startDate, "%d-%m-%Y")
+            break
+          except ValueError:
+            print("Wrong Date Format. Please Try Again.")
+        wantedProject["startDate"] = startDate
+    decision = input("Do You Want To Modify The Project End Date ? ")
+    if(decision.lower() == "yes" or decision.lower() == 'y'):
+        while True:
+         try:
+            endDate = input("Enter Project End Date: (DD-MM-YYYY) ")
+            datetime.datetime.strptime(endDate, "%d-%m-%Y")
+            break
+         except ValueError:
+            print("Wrong Date Format. Please Try Again.")
+        wantedProject["endDate"] = endDate
+    # else:
+    #     pass
+#    editProj = projClass.Projec(title, details, totalTarget, reachedTarget, startDate, endDate, loginEmail)
+    print(wantedProject)
+    saveProj(wantedProject, 'projects.json')
+
+def showProjects():
+    loadProj('projects.json')
+    for proj in projectsList:
+        print(proj)
+
+def showProjWithDate():
+    wantedProject = []   
+    yourProjectDate = input("Enter The Date Of Your Project That You Want To Show Please: ")
+    loadProj('projects.json')
+    for proj in projectsList:
+        if( proj["startDate"] == yourProjectDate or  proj["endDate"] == yourProjectDate):
+            wantedProject.append(proj)
+            
+    if(wantedProject):
+         print(wantedProject)
+    else:
+           print("You Have No Project With This Date")
+           return
+def fundProject():
+    wantedProject = {} 
+    if "logged" in loginUser and loginUser["logged"] == True:
+        console.print("PROJECT DONATION -> \n", style="color(5)")
+        projFundTitle = input("Enter Title Of Project You Want To Fund: ")
+        loadProj('projects.json')
+        for proj in projectsList:
+             if( proj["title"] == projFundTitle):
+                 wantedProject = proj
+                 break
+        if(not wantedProject):
+           print("You Have No Project With This Title")
+           return
+        else:
+           print(wantedProject)
+           projFundMoney = int(input("Enter Amount Of Money You Want To Fund: "))
+           wantedProject["reachedTarget"] = int(wantedProject["reachedTarget"]) + projFundMoney
+        print(wantedProject)
+        if(int(wantedProject["reachedTarget"]) == int(wantedProject["totalTarget"])):
+            console.print("Thank You, We have reached Our Goal Thanks To You", style='green blink bold on white')
+        saveProj(wantedProject, 'projects.json')
+    else:
+        print("You Can’t Donate Unless You Are Registered User")      
+
+
 createProject()
+#editProject()
+#showProjects()
+#showProjWithDate()
+#fundProject()
